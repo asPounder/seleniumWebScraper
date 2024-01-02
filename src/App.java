@@ -11,7 +11,7 @@ import java.nio.file.*;
 import exceptions.*;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
         WebDriver driver = new EdgeDriver(new EdgeOptions().addArguments("--headless"));
