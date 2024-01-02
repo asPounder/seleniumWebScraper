@@ -13,6 +13,7 @@ import exceptions.*;
 public class App {
     public static void main(String[] args) throws Exception {
 
+        System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
         WebDriver driver = new EdgeDriver(new EdgeOptions().addArguments("--headless"));
 
         driver.get("https://extranet.vizja.net/");
