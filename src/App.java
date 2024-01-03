@@ -7,9 +7,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
 import java.util.List;
 import java.util.ArrayList;
-import java.nio.file.*;
-
-import exceptions.*;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /*
  * TODO:
@@ -19,12 +22,8 @@ import exceptions.*;
  */
 
 public class App {
-    public static List<List<String>> timetableScraper(
-        int timeframe, String login, String password) {
+    public static List<List<String>> timetableScraper(int timeframe, String login, String password) {
 
-        // - use the passed arguments
-        // - move declarations here for clarity 
-        // - rework exceptions
         List<List<String>> output = new ArrayList<>();
 
         System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
@@ -36,18 +35,17 @@ public class App {
         WebElement passwordEl = driver.findElement(By.name("haslo"));
 
         try {
-            List<String> data = Files.readAllLines(Paths.get("src\\credentials\\passwordAndLogin.txt"));
-            loginEl.sendKeys(data.get(0));
-            passwordEl.sendKeys(data.get(1));
+            loginEl.sendKeys(login);
+            passwordEl.sendKeys(password);
         } catch (Exception e) {
             driver.quit();
-            throw new NoLoginDataException("Invalid data in passwordAndLogin file");
+            throw new NotFoundException("login data not found;\nHint: edit the config.properties file");
         }
         passwordEl.submit();
 
         if (driver.getCurrentUrl().equals("https://extranet.vizja.net/")) {
             driver.quit();
-            throw new LoginFailureException("Invalid login credentials");
+            throw new IllegalArgumentException("Invalid login credentials; Could not login with given credentials");
         }
 
         WebElement date = driver.findElement(By.cssSelector("div.fc-center > h2"));
@@ -81,7 +79,20 @@ public class App {
         driver.quit();
         return output;
     }
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) throws FileNotFoundException{
+        Properties config = new Properties();
+        try (FileInputStream input = new FileInputStream("config.properties")) {
+            config.load(input);
+        } catch (Exception e) {
+            throw new FileNotFoundException("Could not locate the config.properties file");
+        }
+    
+        LocalDate newestDate = LocalDate.parse(config.getProperty("date"));
+        if (newestDate == null || newestDate.isBefore(LocalDate.now())) {
+            String timeframe = config.getProperty("timeframe");
+            String login = config.getProperty("login");
+            String password = config.getProperty("password");
+            List<List<String>> timetable = timetableScraper(Integer.parseInt(timeframe), login, password);
+        }
     }
 }
