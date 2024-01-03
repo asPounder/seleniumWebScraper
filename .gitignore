@@ -1,2 +1,6 @@
 /.vscode
 /bin
+/pom.xml
+/replit.nix
+/target
+/Main.class
