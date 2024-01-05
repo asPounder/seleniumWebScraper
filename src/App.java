@@ -10,24 +10,31 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
+import javax.swing.*;
+
 
 /*
  * TODO:
  * 1. add gui
  * 2. add caching
  * 3. add config
+ * 4. add serialization!
  */
 
 public class App {
-    public static List<List<String>> timetableScraper(int timeframe, String login, String password) {
+    private static List<List<String>> timetableScraper(int timeframe, String login, String password, String arg) {
+
+        //  ! first row contains date !
 
         List<List<String>> output = new ArrayList<>();
 
         System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
-        WebDriver driver = new EdgeDriver(new EdgeOptions().addArguments("--headless"));
+        WebDriver driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
 
         driver.get("https://extranet.vizja.net/");
 
@@ -79,20 +86,38 @@ public class App {
         driver.quit();
         return output;
     }
-    public static void main(String[] args) throws FileNotFoundException{
+    
+    private static String tryToGet(String property, Properties config) {
+        try {
+            String value = config.getProperty(property);
+            return value;
+        } catch (Exception e) {
+            throw new NoSuchElementException("Unable to fetch " + property);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        String[] headers = {"Time", "Subject"};
+        List<List<String>> rows = new ArrayList<>();
         Properties config = new Properties();
         try (FileInputStream input = new FileInputStream("config.properties")) {
+
             config.load(input);
-        } catch (Exception e) {
+            LocalDate newestDate = LocalDate.parse(tryToGet("date", config));
+            if (newestDate == null || newestDate.isBefore(LocalDate.now())) {
+                String timeframe = tryToGet("timeframe", config);
+                String login = tryToGet("login", config);
+                String password = tryToGet("password", config);
+                String arg = tryToGet("arg", config);
+                List<List<String>> timetable = timetableScraper(Integer.parseInt(timeframe), login, password, arg);
+            }
+            else {
+
+            }
+            
+        } catch (FileNotFoundException e) {
             throw new FileNotFoundException("Could not locate the config.properties file");
-        }
-    
-        LocalDate newestDate = LocalDate.parse(config.getProperty("date"));
-        if (newestDate == null || newestDate.isBefore(LocalDate.now())) {
-            String timeframe = config.getProperty("timeframe");
-            String login = config.getProperty("login");
-            String password = config.getProperty("password");
-            List<List<String>> timetable = timetableScraper(Integer.parseInt(timeframe), login, password);
         }
     }
 }
