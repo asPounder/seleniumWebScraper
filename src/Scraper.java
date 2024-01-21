@@ -28,6 +28,7 @@ public class Scraper {
             passwordEl.sendKeys(password);
         } catch (Exception e) {
             driver.quit();
+            e.printStackTrace();
             throw new NotFoundException("login data not found;\nHint: edit the config.properties file");
         }
         passwordEl.submit();
@@ -52,6 +53,7 @@ public class Scraper {
                 next.click();
                 if (days > timeframe) {
                     driver.quit();
+                    e.printStackTrace();
                     throw new NoSuchElementException("No timetable in specifiec timeframe.");
                 }
                 days += 1;
