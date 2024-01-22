@@ -14,8 +14,11 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import javax.swing.*;
+import java.awt.GridBagLayout;
+import java.awt.Font;
 
 /*
  * TODO:
@@ -24,9 +27,11 @@ import javax.swing.*;
  * 3. add config
  * 4. add serialization!
  * 5. update Scraper with try-final.
+ * 6. add magic number constants.
  */
 
 public class App {
+
     private static String tryToGet(String property, Properties config) {
         try {
             String value = config.getProperty(property);
@@ -46,17 +51,37 @@ public class App {
         }
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
+
+        final String CONFIG_PATH = System.getProperty("user.dir") + "/src/config.properties";
+        final String BINARY_PATH = System.getProperty("user.dir") + "/src/timetable.bin";
+        final String[] LOADING_STATES = {"Loading", "Loading.", "Loading..", "Loading..."};
+
         boolean isOutdated;
         List<List<String>> timetable = null;
+        int loading_id = 0;
+        LocalDate newestDate;
+
         JFrame frame = new JFrame("Plan lekcji");
+        JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setSize(300, 300);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setLayout(new GridBagLayout());
+        frame.add(panel);
 
         Properties config = new Properties();
-        try (FileInputStream input = new FileInputStream("config.properties")) {
+        try (FileInputStream input = new FileInputStream(CONFIG_PATH)) {
 
             config.load(input);
-            LocalDate newestDate = LocalDate.parse(tryToGet("date", config));
+            try {
+                newestDate = LocalDate.parse(tryToGet("date", config));
+            } catch (DateTimeParseException e) {
+                newestDate = null;
+            }
+            
             if (newestDate == null || newestDate.isBefore(LocalDate.now())) {
 
                 isOutdated = true;
@@ -72,14 +97,21 @@ public class App {
                         return Scraper.timetableScraper(timeframe, login, password, arg);
                     }
                 };
+                JLabel label = new JLabel("Loading");
+                label.setFont(new Font("Arial", Font.PLAIN, 24));
+                panel.add(label);
+
                 scraper.execute();
                 while (!scraper.isDone()) {
-
+                    label.setText(LOADING_STATES[loading_id % 4]);
+                    loading_id += 1;
+                    Thread.sleep(500);
                 }
                 try {
                     timetable = scraper.get();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    frame.dispose();
                     throw new ExecutionException("timetableScraper failed.", e.getCause());
                 }
                 
@@ -87,21 +119,25 @@ public class App {
             else {
 
                 isOutdated = false;
-                try (ObjectInputStream os = new ObjectInputStream(new FileInputStream("timetable.bin"))) {
+                try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(BINARY_PATH))) {
                     timetable = (List<List<String>>) os.readObject();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                    frame.dispose();
                     throw new FileNotFoundException("Unable to find timetable.bin file. It should be in src directory");
                 } catch (IOException e) {
                     e.printStackTrace();
+                    frame.dispose();
                     throw new IOException("Unable to fetch from timetable.bin file");
                 }
 
             }
         } catch (FileNotFoundException e) {
+            frame.dispose();
             e.printStackTrace();
             throw new FileNotFoundException("Could not locate the config.properties file");
         }
+
 
         String[][] tableDate = new String[timetable.size()][2];
         for (int i = 1; i < timetable.size(); i++) {
@@ -112,12 +148,14 @@ public class App {
 
 
         if (isOutdated) {
-            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("timetable.bin"))) {
+            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(BINARY_PATH))) {
                 os.writeObject(timetable);
             } catch (FileNotFoundException e) {
+                frame.dispose();
                 e.printStackTrace();
                 throw new FileNotFoundException("Unable to find timetable.bin file. It should be in src directory");
             } catch (IOException e) {
+                frame.dispose();
                 e.printStackTrace();
                 throw new IOException("Unable to write to timetable.bin file");
             }
@@ -125,6 +163,7 @@ public class App {
             try (FileOutputStream fo = new FileOutputStream("config.properties")) {
                 config.store(fo, null);
             } catch (FileNotFoundException e){
+                frame.dispose();
                 e.printStackTrace();
                 throw new FileNotFoundException("Could not locate the config.properties file");
             }
