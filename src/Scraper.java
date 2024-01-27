@@ -16,7 +16,12 @@ public class Scraper {
         List<List<String>> output = new ArrayList<>();
 
         System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
-        WebDriver driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
+        WebDriver driver;
+        if (arg == "--headless") {
+            driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
+        } else {
+            driver = new EdgeDriver();
+        }
 
         driver.get("https://extranet.vizja.net/");
 
@@ -64,7 +69,7 @@ public class Scraper {
         for (WebElement lesson : lessons) {
             String time = lesson.findElement(By.cssSelector("td.fc-list-item-time")).getText();
             String subject = lesson.findElement(By.cssSelector("td.fc-list-item-title > a")).getText();
-            output.add(new ArrayList<>(List.of(subject + " " + time)));
+            output.add(new ArrayList<>(List.of(subject, time)));
         }
 
         driver.quit();

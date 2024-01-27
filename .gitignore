@@ -4,4 +4,5 @@
 /replit.nix
 /target
 /Main.class
-/src/Pretty.java
+/src/config.properties
+/src/timetable.bin
