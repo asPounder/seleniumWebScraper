@@ -1,8 +1,8 @@
-/.vscode
-/bin
-/pom.xml
-/replit.nix
-/target
-/Main.class
-/src/config.properties
-/src/timetable.bin
+.vscode
+bin
+pom.xml
+eplit.nix
+target
+*.class
+src/config.properties
+src/timetable.bin
