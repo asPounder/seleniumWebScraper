@@ -155,7 +155,6 @@ public class App {
                     throw new IOException("Unable to write to timetable.bin file");
                 }
                 
-                System.out.println(timetable.get(0).get(0).equals("27 styczeń 2024"));
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
                 String timetableDate = LocalDate.parse(timetable.get(0).get(0), formatter).toString();
                 tryToSet("date", timetableDate, config);
