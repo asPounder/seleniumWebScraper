@@ -12,10 +12,10 @@ public class Config {
     final private Properties CONFIG;
     final private String PATH;
 
-    final int timeframe;
-    final String login;
-    final String password;
-    final String arg;
+    public final int timeframe;
+    public final String login;
+    public final String password;
+    public final String arg;
 
     public Config(final String PATH) throws IOException {
         this.CONFIG = new Properties();
