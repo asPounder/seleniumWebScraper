@@ -21,20 +21,29 @@ public class Timetable {
         this.CONFIG_PATH = CONFIG_PATH;
     }
 
+
     public int load() {
         try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(this.BINARY_PATH))) {
             List<List<String>> timetable = (List<List<String>>) os.readObject();
             this.date = timetable.get(0).get(0);
-            this.timetableData = new String[timetable.size()-1][2];
-            for (int i = 1; i < timetable.size(); i++) {
-                this.timetableData[i-1][0] = timetable.get(i).get(0);
-                this.timetableData[i-1][1] = timetable.get(i).get(1);
-            }
+            this.timetableData = format(timetable);
         } catch (Exception e) {
             return -1;
         }
         return 0;
     }
+
+
+    public static String[][] format(List<List<String>> timetable) {
+        String[][] formatted = new String[timetable.size()-1][2];
+        for (int i = 1; i < timetable.size(); i++) {
+            formatted[i-1][0] = timetable.get(i).get(0);
+            formatted[i-1][1] = timetable.get(i).get(1);
+        }
+
+        return formatted;
+    }
+
 
     public String getDate() {
         if (this.date == null) {
@@ -44,6 +53,7 @@ public class Timetable {
         }
     }
 
+
     public String[][] getTimetableData() {
         if (this.date == null) {
             throw new IllegalStateException("Unable to get timetableData. Call load() first.");
@@ -52,10 +62,12 @@ public class Timetable {
         }
     }
 
-    public void set(final String DATE) throws IOException {
+
+    public void save(final String DATE) throws IOException {
         saveTimetableData();
         saveTimetableDate(DATE);
     }
+
 
     private void saveTimetableData() throws IOException {
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(this.BINARY_PATH))) {
@@ -66,6 +78,7 @@ public class Timetable {
             throw new IOException("Unable to write to timetable.bin file");
         }
     }
+
 
     private void saveTimetableDate(final String DATE) throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
