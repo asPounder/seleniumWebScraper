@@ -8,7 +8,19 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+/**
+ * The Scraper class provides methods for scraping timetable data from a website.
+ */
 public class Scraper {
+    /**
+     * Scrapes timetable data from a website.
+     *
+     * @param timeframe The number of days to look ahead in the timetable.
+     * @param login     The login username.
+     * @param password  The login password.
+     * @param arg       Additional argument for the web driver, such as "--headless".
+     * @return The timetable data scraped from the website.
+     */
     public static TimetableData timetableScraper(int timeframe, String login, String password, String arg) {
 
         WebDriver driver;
@@ -45,7 +57,7 @@ public class Scraper {
             }
 
             WebElement date = driver.findElement(By.cssSelector("div.fc-center > h2"));
-            output.date = Config.formatToLocalDate(date.getText());
+            output.date = ConfigManager.formatToLocalDate(date.getText());
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(50));
             WebElement next = driver.findElement(By.cssSelector(

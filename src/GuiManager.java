@@ -10,14 +10,14 @@ import java.awt.Font;
 /**
  * Class responsible for managing the graphical user interface (GUI) of the application.
  */
-public class Gui {
+public class GuiManager {
     private JFrame frame;
     private JPanel panel;
 
     /**
      * Constructs a new GUI.
      */
-    public Gui() {
+    public GuiManager() {
         this.frame = new JFrame("Plan lekcji");
         this.panel = new JPanel(new GridBagLayout());
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,7 +40,7 @@ public class Gui {
     public TimetableData getTimetableData(final String configPath) throws IOException, InterruptedException, ExecutionException {
         final String[] LOADING_STATES = {"Loading", "Loading.", "Loading..", "Loading..."};
         int loading_id = 0;
-        Config cfg = new Config(configPath);
+        ConfigManager cfg = new ConfigManager(configPath);
         TimetableData td;
 
         @SuppressWarnings("all")

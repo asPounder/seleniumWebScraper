@@ -11,12 +11,17 @@ import java.time.format.DateTimeFormatter;
 /**
  * Class for managing configuration data stored in a properties file.
  */
-public class Config {
+public class ConfigManager {
 
+    /** The timeframe value read from the configuration file. */
     public final int timeframe;
+    /** The login username read from the configuration file. */
     public final String login;
+    /** The login password read from the configuration file. */
     public final String password;
+    /** Additional argument for the web driver read from the configuration file. */
     public final String arg;
+    /** The date read from the configuration file. */
     public final String date;
 
     /**
@@ -25,7 +30,7 @@ public class Config {
      * @param configPath The path to the configuration file.
      * @throws IOException If an I/O error occurs while reading the configuration file.
      */
-    public Config(final String configPath) throws IOException {
+    public ConfigManager(final String configPath) throws IOException {
         Properties config = new Properties();
 
         try (final FileInputStream is = new FileInputStream(configPath)) {
