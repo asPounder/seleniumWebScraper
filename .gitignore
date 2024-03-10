@@ -1,8 +1,7 @@
 .vscode
 bin
-pom.xml
 eplit.nix
 target
 *.class
-src/config.properties
-src/timetable.bin
+src/main/resources/config.properties
+src/main/resources/timetable.bin
