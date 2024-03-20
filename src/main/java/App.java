@@ -15,33 +15,33 @@ public class App {
      * @throws ExecutionException     If an exception occurs during the execution of a task.
      */
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        final String CONFIG_PATH = System.getProperty("user.dir") + "/src/main/resources/config.properties";
-        final String BINARY_PATH = System.getProperty("user.dir") + "/src/main/resources/timetable.bin";
+        final String CONFIG_PATH = "src/main/resources/config.properties";
+        final String BINARY_PATH = "src/main/resources/timetable.bin";
         
         ConfigManager cfg = new ConfigManager(CONFIG_PATH);
-        LocalDate date = cfg.date.equals("") ? LocalDate.parse(cfg.date) : null;
+        LocalDate date = cfg.date.equals("") ? null : LocalDate.parse(cfg.date);
         GuiManager gui = new GuiManager();
         TimetableData timetableData = new TimetableData();
         boolean wasScrapped;
 
         try {
             if (date == null || date.isBefore(LocalDate.now())) {
-            wasScrapped = true;
-            timetableData = gui.getTimetableData(CONFIG_PATH);
+                wasScrapped = true;
+                timetableData = gui.getTimetableData(CONFIG_PATH);
             } else {
                 wasScrapped = false;
                 timetableData.timetable = TimetableUtils.deserializeTimetable(BINARY_PATH);
                 if (timetableData.timetable == null) {
                     timetableData = gui.getTimetableData(CONFIG_PATH);
+                }
             }
-        }
         
-        gui.displaytimetable(timetableData.timetable);
+            gui.displaytimetable(timetableData.timetable);
         
             if (wasScrapped) {
-            TimetableUtils.serializeTimetable(timetableData.timetable, BINARY_PATH);
-                ConfigManager.saveDate(timetableData.date.toString(), CONFIG_PATH);
-            }
+                TimetableUtils.serializeTimetable(timetableData.timetable, BINARY_PATH);
+                    ConfigManager.saveDate(timetableData.date.toString(), CONFIG_PATH);
+                }
         } catch (Exception e) {
             gui.close();
             throw e;

@@ -28,7 +28,6 @@ public class Scraper {
         WebDriver driver;
         WebDriverManager.edgedriver().setup();
         TimetableData output = new TimetableData();
-        // System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/EDriver/msedgedriver.exe");
         if (arg == "--headless") {
             driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
         } else {

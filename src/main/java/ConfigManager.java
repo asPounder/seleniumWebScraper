@@ -35,13 +35,15 @@ public class ConfigManager {
 
         try (final FileInputStream is = new FileInputStream(configPath)) {
             config.load(is);
-            timeframe = Integer.parseInt(get("timeframe", config));
-            login = get("login", config);
-            password = get("password", config);
-            arg = get("arg", config);
-            date = get("date", config);
+            timeframe = Integer.parseInt(get("timeframe", config)) > 0 ? Integer.parseInt(get("timeframe", config)) : 0;
+            login =     get("login",     config);
+            password =  get("password",  config);
+            arg =       get("arg",       config);
+            date =      get("date",      config);
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Could not find .properties file in specified path");
+            throw new FileNotFoundException("Could not find .properties file in specified path.");
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid value at \"timeframe\" property.");
         }
     }
 
@@ -58,7 +60,7 @@ public class ConfigManager {
         try (final FileInputStream is = new FileInputStream(configPath)) {
             config.load(is);
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Could not find .properties file in specified path");
+            throw new FileNotFoundException("Could not find .properties file in specified path.");
         }
 
         config.setProperty("date", date);
@@ -77,13 +79,15 @@ public class ConfigManager {
      * @return The formatted LocalDate object.
      */
     public static LocalDate formatToLocalDate(final String date) {
-        if (date.equals("")) {
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
-        LocalDate formatted = LocalDate.parse(date, formatter);
+        if (date.equals("")) { return null; }
+        try {
 
-        return formatted;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
+            return LocalDate.parse(date, formatter);
+        
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid date passed to the method.");
+        }
     }
 
     private String get(final String property, final Properties config) {
