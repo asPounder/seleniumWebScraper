@@ -1,9 +1,7 @@
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -12,10 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -31,13 +31,11 @@ public class ConfigManagerTest {
         cfg.setProperty("password", "abcde12345");
         cfg.setProperty("arg",      "--headless");
         cfg.setProperty("login",    "abcde12345");
-        try (FileOutputStream fos = new FileOutputStream(PATH)) {cfg.store(fos, null);};
+        cfg.store(new FileOutputStream(PATH), null);
     }
-
     
     @Nested
     @DisplayName("Reading test suite.")
-    @TestInstance(Lifecycle.PER_CLASS)
     class ReadTest {
 
         @Test
@@ -76,17 +74,51 @@ public class ConfigManagerTest {
                 cfg.store(fos, null);
             }
         }
+
+        @Test
+        @DisplayName("Testing invalid config path.")
+        void incorrectPathTest() {
+            assertThrows(FileNotFoundException.class, () -> new ConfigManager(""));
+        }
         
     }
 
-    @Test
-    void writeTest() {
+    @Nested
+    @DisplayName("Writing test suite.")
+    class WriteTest {
 
+        @Test
+        @DisplayName("Test saving correct date.")
+        void correctDateSaveTest() throws IOException {
+            final String DATE = LocalDate.now().toString();
+            ConfigManager.saveDate(DATE, PATH);
+
+            Properties cfg = new Properties();
+            cfg.load(new FileInputStream(PATH));
+            assertEquals(cfg.getProperty("date"), DATE);
+        }
+
+        @Test
+        @DisplayName("Test incorrect config path.")
+        void incorrectPathTest() {
+            assertThrows(FileNotFoundException.class, () -> ConfigManager.saveDate("", ""));
+        }
+        
+        @Test
+        @DisplayName("Test formating correct date.")
+        void correctDateFormatTest() {
+            assertEquals(ConfigManager.formatToLocalDate("2 kwiecień 2024"), LocalDate.of(2024, 4, 2));
+        }
+
+        @Test
+        @DisplayName("Test formatting incorrect date.")
+        void incorrectDateFormatTest() {
+            assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate("abcdef"));
+        }
     }
 
     @AfterAll
     static void tearDownFile() {
         new File("src/test/resources/config.properties").delete();
     }
-
 }

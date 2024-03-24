@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Class for managing configuration data stored in a properties file.
@@ -85,8 +86,8 @@ public class ConfigManager {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
             return LocalDate.parse(date, formatter);
         
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid date passed to the method.");
+        } catch (DateTimeParseException e) {
+            throw new DateTimeParseException("Invalid date passed to the method.", date, 0);
         }
     }
 
