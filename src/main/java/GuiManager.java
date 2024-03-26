@@ -36,17 +36,16 @@ public class GuiManager {
      * @throws InterruptedException   If the thread is interrupted while waiting.
      * @throws ExecutionException     If an error occurs during the execution of the timetable scraper.
      */
-    public TimetableData getTimetableData(final String configPath) throws IOException, InterruptedException, ExecutionException {
+    public TimetableData getTimetableData(final int timeframe, final String login, final String password, final String arg) throws IOException, InterruptedException, ExecutionException {
         final String[] LOADING_STATES = {"Loading", "Loading.", "Loading..", "Loading..."};
-        int loading_id = 0;
-        ConfigManager cfg = new ConfigManager(configPath);
-        TimetableData td;
+        int loadingId = 0;
+        TimetableData ttData;
 
         @SuppressWarnings("all")
         SwingWorker<TimetableData, Void> scraper = new SwingWorker() {
             @Override
             protected TimetableData doInBackground() {
-                return Scraper.timetableScraper(cfg.timeframe, cfg.login, cfg.password, cfg.arg);
+                return Scraper.timetableScraper(timeframe, login, password, arg);
             }
         };
         JLabel label = new JLabel("Loading");
@@ -55,18 +54,18 @@ public class GuiManager {
 
         scraper.execute();
         while (!scraper.isDone()) {
-            label.setText(LOADING_STATES[loading_id % 4]);
-            loading_id += 1;
+            label.setText(LOADING_STATES[loadingId]);
+            loadingId = loadingId + 1 > 3 ? 0 : loadingId + 1; // avoids modulo, premature optimization
             Thread.sleep(500);
         }
         try {
-            td = scraper.get();
+            ttData = scraper.get();
         } catch (Exception e) {
             throw new ExecutionException("timetableScraper failed.", e.getCause());
         }
         this.panel.remove(label);
 
-        return td;
+        return ttData;
     }
 
     /**

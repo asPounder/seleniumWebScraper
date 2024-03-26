@@ -18,8 +18,8 @@ public class App {
         final String CONFIG_PATH = "src/main/resources/config.properties";
         final String BINARY_PATH = "src/main/resources/timetable.bin";
         
-        ConfigManager cfg = new ConfigManager(CONFIG_PATH);
-        LocalDate date = cfg.date.equals("") ? null : LocalDate.parse(cfg.date);
+        ConfigManager cfgm = new ConfigManager(CONFIG_PATH);
+        LocalDate date = cfgm.date.equals("") ? null : LocalDate.parse(cfgm.date);
         GuiManager gui = new GuiManager();
         TimetableData timetableData = new TimetableData();
         boolean wasScrapped;
@@ -27,24 +27,27 @@ public class App {
         try {
             if (date == null || date.isBefore(LocalDate.now())) {
                 wasScrapped = true;
-                timetableData = gui.getTimetableData(CONFIG_PATH);
+                timetableData = gui.getTimetableData(cfgm.timeframe, cfgm.login, cfgm.password, cfgm.arg);
             } else {
                 wasScrapped = false;
-                timetableData.timetable = TimetableUtils.deserializeTimetable(BINARY_PATH);
+                timetableData.timetable = TimetableManager.deserializeTimetable(BINARY_PATH);
                 if (timetableData.timetable == null) {
-                    timetableData = gui.getTimetableData(CONFIG_PATH);
+                    wasScrapped = true;
+                    timetableData = gui.getTimetableData(cfgm.timeframe, cfgm.login, cfgm.password, cfgm.arg);
                 }
             }
         
             gui.displaytimetable(timetableData.timetable);
         
             if (wasScrapped) {
-                TimetableUtils.serializeTimetable(timetableData.timetable, BINARY_PATH);
+                TimetableManager.serializeTimetable(timetableData.timetable, BINARY_PATH);
                     ConfigManager.saveDate(timetableData.date.toString(), CONFIG_PATH);
                 }
+
         } catch (Exception e) {
-            gui.close();
             throw e;
+        } finally {
+            // gui.close();
         }
     }   
 }

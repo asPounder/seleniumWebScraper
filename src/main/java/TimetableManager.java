@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 /**
  * Utility class for serializing, deserializing, and formatting timetable data.
  */
-public class TimetableUtils {
+public class TimetableManager {
 
     /**
      * Deserialize timetable data from a binary file.
@@ -32,10 +32,10 @@ public class TimetableUtils {
      * @return The formatted timetable data as a two-dimensional array of strings.
      */
     public static String[][] formatTimetable(List<List<String>> timetable) {
-        String[][] formatted = new String[timetable.size()-1][2];
-        for (int i = 1; i < timetable.size(); i++) {
-            formatted[i-1][0] = timetable.get(i).get(0);
-            formatted[i-1][1] = timetable.get(i).get(1);
+        String[][] formatted = new String[timetable.size()][2]; // was timetable.size()-1, could be needed?
+        for (int i = 0; i < timetable.size(); i++) {
+            formatted[i][0] = timetable.get(i).get(0);
+            formatted[i][1] = timetable.get(i).get(1);
         }
         return formatted;
     }

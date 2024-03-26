@@ -3,5 +3,3 @@ bin
 eplit.nix
 target
 *.class
-src/main/resources/config.properties
-src/main/resources/timetable.bin

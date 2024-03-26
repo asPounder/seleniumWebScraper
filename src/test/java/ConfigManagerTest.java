@@ -2,6 +2,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -18,25 +19,33 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Properties;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS) // avoids setting Before and After methods with static, convenient!
 public class ConfigManagerTest {
-    Properties cfg = new Properties();
     final String PATH = "src/test/resources/config.properties";
+    Properties cfg;
 
     @BeforeAll
-    void createFile() throws IOException {
+    void init() throws IOException {
         new File(PATH).createNewFile();
+        cfg = new Properties();
         cfg.setProperty("date",     "");
         cfg.setProperty("timeframe","100");
         cfg.setProperty("password", "abcde12345");
         cfg.setProperty("arg",      "--headless");
         cfg.setProperty("login",    "abcde12345");
-        cfg.store(new FileOutputStream(PATH), null);
+        try (FileOutputStream fos = new FileOutputStream(PATH)) { cfg.store(fos, null); }
     }
     
     @Nested
     @DisplayName("Reading test suite.")
+    @TestInstance(Lifecycle.PER_CLASS)
     class ReadTest {
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            cfg.setProperty("timeframe", "100");
+            try (FileOutputStream fos = new FileOutputStream(PATH)) { cfg.store(fos, null); }
+        }
 
         @Test
         @DisplayName("Testing reading correct config file.")
@@ -53,12 +62,9 @@ public class ConfigManagerTest {
         @DisplayName("Testing reading invalid timeframe.")
         void invalidTimeframeTest() throws IOException {
             try (FileOutputStream fos = new FileOutputStream(PATH)) {
-                cfg.setProperty("timeframe", "a");
+                cfg.setProperty("timeframe", "not a number!");
                 cfg.store(fos, null);
                 assertThrows(NumberFormatException.class, () -> new ConfigManager(PATH));
-    
-                cfg.setProperty("timeframe", "100");
-                cfg.store(fos, null);
             }
         }
     
@@ -69,9 +75,6 @@ public class ConfigManagerTest {
                 cfg.remove("timeframe");
                 cfg.store(fos, null);
                 assertThrows(IllegalArgumentException.class, () -> new ConfigManager(PATH));
-    
-                cfg.setProperty("timeframe", "100");
-                cfg.store(fos, null);
             }
         }
 
@@ -80,7 +83,6 @@ public class ConfigManagerTest {
         void incorrectPathTest() {
             assertThrows(FileNotFoundException.class, () -> new ConfigManager(""));
         }
-        
     }
 
     @Nested
@@ -94,7 +96,7 @@ public class ConfigManagerTest {
             ConfigManager.saveDate(DATE, PATH);
 
             Properties cfg = new Properties();
-            cfg.load(new FileInputStream(PATH));
+            try (FileInputStream fis = new FileInputStream(PATH)) { cfg.load(fis); }
             assertEquals(cfg.getProperty("date"), DATE);
         }
 
@@ -115,10 +117,17 @@ public class ConfigManagerTest {
         void incorrectDateFormatTest() {
             assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate("abcdef"));
         }
+
+        @Test
+        @DisplayName("Test formatting empty date.")
+        void emptyDateFormatTest() {
+            assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate(""));
+            // should empty date throw or return null ??
+        }
     }
 
     @AfterAll
-    static void tearDownFile() {
-        new File("src/test/resources/config.properties").delete();
+    void tearDownFile() {
+        new File(PATH).delete();
     }
 }

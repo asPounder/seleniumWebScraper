@@ -34,8 +34,8 @@ public class ConfigManager {
     public ConfigManager(final String configPath) throws IOException {
         Properties config = new Properties();
 
-        try (final FileInputStream is = new FileInputStream(configPath)) {
-            config.load(is);
+        try (final FileInputStream fis = new FileInputStream(configPath)) {
+            config.load(fis);
             timeframe = Integer.parseInt(get("timeframe", config)) > 0 ? Integer.parseInt(get("timeframe", config)) : 0;
             login =     get("login",     config);
             password =  get("password",  config);
@@ -58,16 +58,16 @@ public class ConfigManager {
     public static void saveDate(final String date, final String configPath) throws IOException { // maybe LocalDate date?
         Properties config = new Properties();
         
-        try (final FileInputStream is = new FileInputStream(configPath)) {
-            config.load(is);
+        try (final FileInputStream fis = new FileInputStream(configPath)) {
+            config.load(fis);
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("Could not find .properties file in specified path.");
         }
 
         config.setProperty("date", date);
 
-        try (final FileOutputStream os = new FileOutputStream(configPath)) {
-            config.store(os, null);
+        try (final FileOutputStream fos = new FileOutputStream(configPath)) {
+            config.store(fos, null);
         } catch (IOException e) {
             throw new IOException("Could not update date in .properties file.");
         }
@@ -80,9 +80,8 @@ public class ConfigManager {
      * @return The formatted LocalDate object.
      */
     public static LocalDate formatToLocalDate(final String date) {
-        if (date.equals("")) { return null; }
         try {
-
+            // FIXME: should empty date throw or return null ??
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
             return LocalDate.parse(date, formatter);
         
@@ -93,10 +92,9 @@ public class ConfigManager {
 
     private String get(final String property, final Properties config) {
         String value = config.getProperty(property);
-        if (value != null) {
-            return value;
-        } else {
+        if (value == null) {
             throw new IllegalArgumentException("Property not found: " + property);
-        }
+        } 
+        return value;
     }
 }

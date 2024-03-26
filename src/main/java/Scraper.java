@@ -28,7 +28,7 @@ public class Scraper {
         WebDriver driver;
         WebDriverManager.edgedriver().setup();
         TimetableData output = new TimetableData();
-        if (arg == "--headless") {
+        if (arg.equals("--headless")) {
             driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
         } else {
             driver = new EdgeDriver();
@@ -45,19 +45,19 @@ public class Scraper {
                 loginEl.sendKeys(login);
                 passwordEl.sendKeys(password);
             } catch (Exception e) {
-                throw new NotFoundException("login data not found;\nHint: edit the config.properties file");
+                throw new NotFoundException("login data not found; Hint: edit the config.properties file.");
             }
             passwordEl.submit();
+            
+            if (driver.getCurrentUrl().equals("https://extranet.vizja.net/")) {
+                throw new IllegalArgumentException("Invalid login credentials; Could not login with given credentials.");
+            }
 
+            // closing possible popup window
             try {
                 WebElement close = driver.findElement(By.className("ui-dialog-titlebar-close"));
                 close.click();
             } catch (Exception e) {}
-            
-            if (driver.getCurrentUrl().equals("https://extranet.vizja.net/")) {
-                throw new IllegalArgumentException("Invalid login credentials; Could not login with given credentials");
-            }
-
             
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(50));
             WebElement next = driver.findElement(By.cssSelector("div.fc-button-group > button.fc-corner-right"));
@@ -85,7 +85,7 @@ public class Scraper {
                 String time = lesson.findElement(By.cssSelector("td.fc-list-item-time")).getText();
                 tempTimetable.add(new ArrayList<>(List.of(subject, time)));
             }
-            output.timetable = TimetableUtils.formatTimetable(tempTimetable);
+            output.timetable = TimetableManager.formatTimetable(tempTimetable);
 
             return output;
 
