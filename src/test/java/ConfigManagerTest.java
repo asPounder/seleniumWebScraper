@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,13 +17,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Properties;
 
-@TestInstance(Lifecycle.PER_CLASS) // avoids setting Before and After methods with static, convenient!
 public class ConfigManagerTest {
-    final String PATH = "src/test/resources/config.properties";
-    Properties cfg;
+    static final String PATH = "src/test/resources/config.properties";
+    static Properties cfg;
 
     @BeforeAll
-    void init() throws IOException {
+    static void init() throws IOException {
         new File(PATH).createNewFile();
         cfg = new Properties();
         cfg.setProperty("date",     "");
@@ -38,11 +35,10 @@ public class ConfigManagerTest {
     
     @Nested
     @DisplayName("Reading test suite.")
-    @TestInstance(Lifecycle.PER_CLASS)
-    class ReadTest {
+    static class ReadTest {
 
         @AfterEach
-        void cleanUp() throws IOException {
+        static void cleanUp() throws IOException {
             cfg.setProperty("timeframe", "100");
             try (FileOutputStream fos = new FileOutputStream(PATH)) { cfg.store(fos, null); }
         }
@@ -122,12 +118,11 @@ public class ConfigManagerTest {
         @DisplayName("Test formatting empty date.")
         void emptyDateFormatTest() {
             assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate(""));
-            // should empty date throw or return null ??
         }
     }
 
     @AfterAll
-    void tearDownFile() {
+    static void tearDownFile() {
         new File(PATH).delete();
     }
 }

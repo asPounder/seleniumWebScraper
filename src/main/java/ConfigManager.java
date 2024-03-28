@@ -81,7 +81,6 @@ public class ConfigManager {
      */
     public static LocalDate formatToLocalDate(final String date) {
         try {
-            // FIXME: should empty date throw or return null ??
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
             return LocalDate.parse(date, formatter);
         
