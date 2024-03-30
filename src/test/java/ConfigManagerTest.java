@@ -35,10 +35,10 @@ public class ConfigManagerTest {
     
     @Nested
     @DisplayName("Reading test suite.")
-    static class ReadTest {
+    class ReadTest {
 
         @AfterEach
-        static void cleanUp() throws IOException {
+        void cleanUp() throws IOException {
             cfg.setProperty("timeframe", "100");
             try (FileOutputStream fos = new FileOutputStream(PATH)) { cfg.store(fos, null); }
         }
