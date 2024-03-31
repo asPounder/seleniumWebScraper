@@ -23,7 +23,7 @@ public class ConfigManager {
     /** Additional argument for the web driver read from the configuration file. */
     public final String arg;
     /** The date read from the configuration file. */
-    public final String date;
+    public final String timestamp;
 
     /**
      * Constructs a new Config object by reading configuration data from the specified file path.
@@ -37,10 +37,10 @@ public class ConfigManager {
         try (final FileInputStream fis = new FileInputStream(configPath)) {
             config.load(fis);
             timeframe = Integer.parseInt(get("timeframe", config)) > 0 ? Integer.parseInt(get("timeframe", config)) : 0;
-            login =     get("login",     config);
-            password =  get("password",  config);
-            arg =       get("arg",       config);
-            date =      get("date",      config);
+            login =     get("login",          config);
+            password =  get("password",       config);
+            arg =       get("arg",            config);
+            timestamp = get("timestamp",      config);
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("Could not find .properties file in specified path.");
         } catch (NumberFormatException e) {

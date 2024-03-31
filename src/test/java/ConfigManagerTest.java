@@ -25,7 +25,7 @@ public class ConfigManagerTest {
     static void init() throws IOException {
         new File(PATH).createNewFile();
         cfg = new Properties();
-        cfg.setProperty("date",     "");
+        cfg.setProperty("timestamp","");
         cfg.setProperty("timeframe","100");
         cfg.setProperty("password", "abcde12345");
         cfg.setProperty("arg",      "--headless");
@@ -47,7 +47,7 @@ public class ConfigManagerTest {
         @DisplayName("Testing reading correct config file.")
         void correctConfigTest() throws IOException {
             ConfigManager cfgm = new ConfigManager(PATH);
-            assertEquals(cfgm.date,     "");
+            assertEquals(cfgm.timestamp,"");
             assertEquals(cfgm.timeframe,100);
             assertEquals(cfgm.password, "abcde12345");
             assertEquals(cfgm.arg,      "--headless");

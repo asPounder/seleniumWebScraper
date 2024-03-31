@@ -19,13 +19,13 @@ public class App {
         final String BINARY_PATH = "src/main/resources/timetable.bin";
         
         ConfigManager cfgm = new ConfigManager(CONFIG_PATH);
-        LocalDate date = cfgm.date.equals("") ? null : LocalDate.parse(cfgm.date);
+        LocalDate timestamp = cfgm.timestamp.equals("") ? null : LocalDate.parse(cfgm.timestamp);
         GuiManager gui = new GuiManager();
         TimetableData timetableData = new TimetableData();
         boolean wasScrapped;
 
         try {
-            if (date == null || date.isBefore(LocalDate.now())) {
+            if (timestamp == null || timestamp.isBefore(LocalDate.now())) {
                 wasScrapped = true;
                 timetableData = gui.getTimetableData(cfgm.timeframe, cfgm.login, cfgm.password, cfgm.arg);
             } else {
@@ -46,8 +46,6 @@ public class App {
 
         } catch (Exception e) {
             throw e;
-        } finally {
-            // gui.close();
         }
     }   
 }
