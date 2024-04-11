@@ -17,7 +17,7 @@ public class Scraper {
     /**
      * Scrapes timetable data from a website.
      *
-     * @param timeframe The number of days to look ahead in the timetable.
+     * @param timeframe The number of days to look ahead for the timetable.
      * @param login     The login username.
      * @param password  The login password.
      * @param arg       Additional argument for the web driver, such as "--headless".
@@ -27,7 +27,7 @@ public class Scraper {
 
         WebDriver driver;
         WebDriverManager.edgedriver().setup();
-        TimetableData output = new TimetableData();
+        TimetableData ttData = new TimetableData();
         if (arg.equals("--headless")) {
             driver = new EdgeDriver(new EdgeOptions().addArguments(arg));
         } else {
@@ -75,8 +75,8 @@ public class Scraper {
                 }
             }
                 
-            WebElement date = driver.findElement(By.cssSelector("div.fc-center > h2"));
-            output.date = ConfigManager.formatToLocalDate(date.getText());
+            WebElement timestamp = driver.findElement(By.cssSelector("div.fc-center > h2"));
+            ttData.timestamp = ConfigManager.formatToLocalDate(timestamp.getText());
 
             List<WebElement> lessons = timetable.findElements(By.cssSelector("tr.fc-list-item"));
             List<List<String>> tempTimetable = new ArrayList<>();
@@ -85,9 +85,9 @@ public class Scraper {
                 String time = lesson.findElement(By.cssSelector("td.fc-list-item-time")).getText();
                 tempTimetable.add(new ArrayList<>(List.of(subject, time)));
             }
-            output.timetable = TimetableManager.formatTimetable(tempTimetable);
+            ttData.timetable = TimetableManager.formatTimetable(tempTimetable);
 
-            return output;
+            return ttData;
 
         } finally {
             driver.quit();

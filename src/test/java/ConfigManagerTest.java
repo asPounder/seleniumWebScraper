@@ -86,37 +86,36 @@ public class ConfigManagerTest {
     class WriteTest {
 
         @Test
-        @DisplayName("Test saving correct date.")
-        void correctDateSaveTest() throws IOException {
-            final String DATE = LocalDate.now().toString();
-            ConfigManager.saveDate(DATE, PATH);
+        @DisplayName("Test saving correct timestamp.")
+        void correctTimestampSaveTest() throws IOException {
+            final String TIMESTAMP = LocalDate.now().toString();
+            ConfigManager.saveTimestamp(TIMESTAMP, PATH);
 
-            Properties cfg = new Properties();
             try (FileInputStream fis = new FileInputStream(PATH)) { cfg.load(fis); }
-            assertEquals(cfg.getProperty("date"), DATE);
+            assertEquals(cfg.getProperty("timestamp"), TIMESTAMP);
         }
 
         @Test
         @DisplayName("Test incorrect config path.")
         void incorrectPathTest() {
-            assertThrows(FileNotFoundException.class, () -> ConfigManager.saveDate("", ""));
+            assertThrows(FileNotFoundException.class, () -> ConfigManager.saveTimestamp("", ""));
         }
         
         @Test
-        @DisplayName("Test formating correct date.")
-        void correctDateFormatTest() {
+        @DisplayName("Test formating correct timestamp.")
+        void correctTimestampFormatTest() {
             assertEquals(ConfigManager.formatToLocalDate("2 kwiecień 2024"), LocalDate.of(2024, 4, 2));
         }
 
         @Test
-        @DisplayName("Test formatting incorrect date.")
-        void incorrectDateFormatTest() {
+        @DisplayName("Test formatting incorrect timestamp.")
+        void incorrectTimestampFormatTest() {
             assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate("abcdef"));
         }
 
         @Test
-        @DisplayName("Test formatting empty date.")
-        void emptyDateFormatTest() {
+        @DisplayName("Test formatting empty timestamp.")
+        void emptyTimestampFormatTest() {
             assertThrows(DateTimeParseException.class, () -> ConfigManager.formatToLocalDate(""));
         }
     }

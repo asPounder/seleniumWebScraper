@@ -1,27 +1,27 @@
 import java.time.LocalDate;
 
 /**
- * The TimetableData class represents timetable data.
+ * The helper TimetableData class.
  */
 public class TimetableData {
-    /** The timetable data represented as a 2D array. */
+    /** 
+     * The timetable itself represented as an String array of arrays of length 2.
+     * Formated as [subject, time]
+     */
     public String[][] timetable;
-    /** The date associated with the timetable data. */
-    public LocalDate date;
+    /** The timestamp associated with the timetable. */
+    public LocalDate timestamp;
 
     /**
-     * Constructs a TimetableData object with the given timetable and date.
-     *
-     * @param timetable The timetable data as a 2D array.
-     * @param date      The date associated with the timetable data.
+     * Constructs a TimetableData object with the given timetable and timestamp.
      */
-    public TimetableData(String[][] timetable, LocalDate date) {
+    public TimetableData(String[][] timetable, LocalDate timestamp) {
         this.timetable = timetable;
-        this.date = date;
+        this.timestamp = timestamp;
     }
 
     /**
-     * Constructs a TimetableData object with null timetable and date.
+     * Constructs a TimetableData object with null timetable and timestamp.
      */
     public TimetableData() {
         this(null, null);

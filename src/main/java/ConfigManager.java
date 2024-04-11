@@ -14,15 +14,18 @@ import java.time.format.DateTimeParseException;
  */
 public class ConfigManager {
 
-    /** The timeframe value read from the configuration file. */
+    /** 
+     * The timeframe value. Determines the amount of days that the timetable can be away from. 
+     * Use with caution. High values can cause very long scraping time.
+     */
     public final int timeframe;
-    /** The login username read from the configuration file. */
+    /** The login read from the configuration file. */
     public final String login;
-    /** The login password read from the configuration file. */
+    /** The password read from the configuration file. */
     public final String password;
-    /** Additional argument for the web driver read from the configuration file. */
+    /** Argument for the webdriver. Can be "--headless", anything else is ignored. */
     public final String arg;
-    /** The date read from the configuration file. */
+    /** The timestamp read from the configuration file. Either empty or date of the saved timetable. */
     public final String timestamp;
 
     /**
@@ -49,13 +52,13 @@ public class ConfigManager {
     }
 
     /**
-     * Saves the provided date to the configuration file.
+     * Saves the provided timestamp to the configuration file.
      *
-     * @param date       The date to be saved.
-     * @param configPath The path to the configuration file.
-     * @throws IOException If an I/O error occurs while writing to the configuration file.
+     * @param timestamp       The timestamp to be saved.
+     * @param configPath      The path to the configuration file.
+     * @throws IOException    If an I/O error occurs while writing to the configuration file.
      */
-    public static void saveDate(final String date, final String configPath) throws IOException { // maybe LocalDate date?
+    public static void saveTimestamp(final String timestamp, final String configPath) throws IOException { 
         Properties config = new Properties();
         
         try (final FileInputStream fis = new FileInputStream(configPath)) {
@@ -64,7 +67,7 @@ public class ConfigManager {
             throw new FileNotFoundException("Could not find .properties file in specified path.");
         }
 
-        config.setProperty("date", date);
+        config.setProperty("timestamp", timestamp);
 
         try (final FileOutputStream fos = new FileOutputStream(configPath)) {
             config.store(fos, null);
@@ -74,18 +77,18 @@ public class ConfigManager {
     }
 
     /**
-     * Formats the provided date string to a LocalDate object.
+     * Formats the provided timestamp string to a LocalDate object.
      *
-     * @param date The date string to be formatted.
-     * @return The formatted LocalDate object.
+     * @param timestamp The timestamp string to be formatted.
+     * @return          The formatted LocalDate object.
      */
-    public static LocalDate formatToLocalDate(final String date) {
+    public static LocalDate formatToLocalDate(final String timestamp) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d LLLL yyyy", new Locale("pl"));
-            return LocalDate.parse(date, formatter);
+            return LocalDate.parse(timestamp, formatter);
         
         } catch (DateTimeParseException e) {
-            throw new DateTimeParseException("Invalid date passed to the method.", date, 0);
+            throw new DateTimeParseException("Invalid date passed to the method.", timestamp, 0);
         }
     }
 

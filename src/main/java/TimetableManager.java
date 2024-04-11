@@ -14,8 +14,8 @@ public class TimetableManager {
     /**
      * Deserialize timetable data from a binary file.
      *
-     * @param binaryPath The path to the binary file containing the serialized timetable data.
-     * @return The deserialized timetable data as a two-dimensional array of strings, or {@code null} if an error occurs.
+     * @param binaryPath The path to the binary file.
+     * @return           The deserialized timetable data as a two-dimensional array of strings, or {@code null} if an error occurs.
      */
     public static String[][] deserializeTimetable(final String binaryPath) {
         try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(binaryPath))) {
@@ -43,8 +43,8 @@ public class TimetableManager {
     /**
      * Serialize timetable data to a binary file.
      *
-     * @param timetable  The timetable data to be serialized, represented as a two-dimensional array of strings.
-     * @param binaryPath The path to the binary file where the serialized timetable data will be written.
+     * @param timetable    The timetable data to be serialized, represented as a two-dimensional array of strings.
+     * @param binaryPath   The path to the binary file where the serialized timetable data will be written.
      * @throws IOException If an I/O error occurs while writing the data to the file.
      */
     public static void serializeTimetable(final String[][] timetable, final String binaryPath) throws IOException {

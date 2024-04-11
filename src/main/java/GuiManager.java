@@ -28,10 +28,13 @@ public class GuiManager {
     }
 
     /**
-     * Retrieves timetable data from a configuration file.
+     * Scrapes the timetable. Displays a loading message and scraper in the background.
      *
-     * @param configPath The path to the configuration file.
-     * @return The timetable data obtained from the configuration file.
+     * @param timeframe               The number of days to look ahead for the timetable.
+     * @param login                   The login username.
+     * @param password                The login password.
+     * @param arg                     Additional argument for the web driver, such as "--headless".
+     * @return                        The TimetableData obtained from the scraper.
      * @throws IOException            If an I/O error occurs while reading the configuration file.
      * @throws InterruptedException   If the thread is interrupted while waiting.
      * @throws ExecutionException     If an error occurs during the execution of the timetable scraper.

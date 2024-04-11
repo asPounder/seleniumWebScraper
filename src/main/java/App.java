@@ -3,13 +3,12 @@ import java.time.LocalDate;
 import java.util.concurrent.ExecutionException;
 
 /**
- * The main application class responsible for initializing and running the timetable application.
+ * The main class responsible for running the timetable application.
  */
 public class App {
     /**
      * The main entry point of the application.
      *
-     * @param args The command-line arguments passed to the application.
      * @throws IOException            If an I/O error occurs while reading or writing files.
      * @throws InterruptedException   If the execution is interrupted while waiting for a result.
      * @throws ExecutionException     If an exception occurs during the execution of a task.
@@ -41,10 +40,11 @@ public class App {
         
             if (wasScrapped) {
                 TimetableManager.serializeTimetable(timetableData.timetable, BINARY_PATH);
-                    ConfigManager.saveDate(timetableData.date.toString(), CONFIG_PATH);
+                    ConfigManager.saveTimestamp(timetableData.timestamp.toString(), CONFIG_PATH);
                 }
 
         } catch (Exception e) {
+            gui.close();
             throw e;
         }
     }   
