@@ -54,6 +54,7 @@
 * Handles the login and finds the timetable.
 * Configurable with a config file.
 * Caches the timetable to avoid costly scraping.
+* Displays a simple, responsive Swing-based GUI.
 
 Configuration file is in `src\main\resources\config.properties`.</br>
 <b>Constructive criticism</b> is always welcome!</br>
