@@ -51,8 +51,8 @@
   My first small web scraping project.
 
 * Fetches school timetable from the website.
-* Handles the login amd finds the timetable.
-* Configurable with a conifg file.
+* Handles the login and finds the timetable.
+* Configurable with a config file.
 * Caches the timetable to avoid costly scraping.
 
 Configuration file is in `src\main\resources\config.properties`.</br>
@@ -108,7 +108,7 @@ Feel free to contribute or help in any way.
 ## Roadmap
 
 The project is <b>finished</b>.<br>
-Any suggestions for improvemnts or ideas are always welcome.<br>
+Any suggestions for improvements or ideas are always welcome.<br>
 Feel free to contribute as you like!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
