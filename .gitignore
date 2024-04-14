@@ -1,6 +1,5 @@
-/.vscode
-/bin
-/pom.xml
-/replit.nix
-/target
-/Main.class
+.vscode
+bin
+eplit.nix
+target
+*.class
