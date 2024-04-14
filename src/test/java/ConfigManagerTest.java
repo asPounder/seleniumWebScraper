@@ -88,7 +88,7 @@ public class ConfigManagerTest {
         @Test
         @DisplayName("Test saving correct timestamp.")
         void correctTimestampSaveTest() throws IOException {
-            final String TIMESTAMP = LocalDate.now().toString();
+            final String TIMESTAMP = "";
             ConfigManager.saveTimestamp(TIMESTAMP, PATH);
 
             try (FileInputStream fis = new FileInputStream(PATH)) { cfg.load(fis); }
